@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ukwala Supermarket Admin Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="ukwala-header">
+    <img src="images/ukwala-logo.jpeg" alt="Ukwala Supermarket Logo" class="ukwala-logo" />
+    <h1 class="ukwala-title">Admin Dashboard – Ukwala Supermarket</h1>
+  </header>
+
+  <main class="container" id="loginSection">
+    <h2>Admin Login</h2>
+    <form id="loginForm">
+      <label>Username:</label>
+      <input type="text" id="username" required placeholder="Enter username" />
+      <label>Password:</label>
+      <input type="password" id="password" required placeholder="Enter password" />
+      <button type="submit" class="submit-btn">Login</button>
+    </form>
+  </main>
+
+  <main class="container" id="dashboardSection" style="display: none;">
+    <h2>Applicant Submissions</h2>
+    <table id="applicantsTable">
+      <thead>
+        <tr>
+          <th>Full Name</th>
+          <th>Email</th>
+          <th>Phone</th>
+          <th>Position</th>
+          <th>Shirt Size</th>
+          <th>Trouser Size</th>
+          <th>Shoe Size</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <button id="exportBtn" class="submit-btn">Export as CSV</button>
+  </main>
+
+  <footer class="ukwala-footer">
+    <div class="ukwala-footer-inner">
+      <p>© 2025 Ukwala Supermarket. Admin Use Only.</p>
+      <p class="ukwala-footer-sub">Human Resource Department | Reopening Project</p>
+    </div>
+  </footer>
+
+  <script>
+    const loginForm = document.getElementById("loginForm");
+    const loginSection = document.getElementById("loginSection");
+    const dashboardSection = document.getElementById("dashboardSection");
+    const applicantsTable = document.querySelector("#applicantsTable tbody");
+    const username = "admin";
+    const password = "ukw@la2025";
+
+    loginForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const user = document.getElementById("username").value;
+      const pass = document.getElementById("password").value;
+      if (user === username && pass === password) {
+        loginSection.style.display = "none";
+        dashboardSection.style.display = "block";
+        loadApplicants();
+      } else {
+        alert("Invalid login. Try again.");
+      }
+    });
+
+    function loadApplicants() {
+      applicantsTable.innerHTML = "";
+      const applicants = JSON.parse(localStorage.getItem("ukwalaApplicants") || "[]");
+      if (applicants.length === 0) {
+        applicantsTable.innerHTML = '<tr><td colspan="7" style="text-align:center;">No data found.</td></tr>';
+        return;
+      }
+      applicants.forEach(app => {
+        const row = `<tr>
+          <td>${app.fullname}</td>
+          <td>${app.email}</td>
+          <td>${app.phone}</td>
+          <td>${app.position}</td>
+          <td>${app.shirt}</td>
+          <td>${app.trouser}</td>
+          <td>${app.shoes}</td>
+        </tr>`;
+        applicantsTable.insertAdjacentHTML("beforeend", row);
+      });
+    }
+
+    document.getElementById("exportBtn").addEventListener("click", () => {
+      const applicants = JSON.parse(localStorage.getItem("ukwalaApplicants") || "[]");
+      if (applicants.length === 0) {
+        alert("No applicant data available.");
+        return;
+      }
+      const csv = [
+        ["Full Name", "Email", "Phone", "Position", "Shirt Size", "Trouser Size", "Shoe Size"],
+        ...applicants.map(a => [a.fullname, a.email, a.phone, a.position, a.shirt, a.trouser, a.shoes])
+      ].map(r => r.join(",")).join("\n");
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "ukwala_applicants.csv";
+      link.click();
+    });
+  </script>
+</body>
+</html>
