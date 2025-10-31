@@ -1,187 +1,145 @@
-/* ===============================
-   UKWALA SUPERMARKET STYLESHEET
-   =============================== */
-
-/* --- Brand Colors --- */
 :root {
-  --ukwala-green: #0b7a34;
-  --ukwala-red: #d9271e;
-  --ukwala-gray: #f5f5f5;
-  --ukwala-dark: #222;
+  --ukwala-navy: #001f3f;
+  --ukwala-orange: #ff6600;
+  --ukwala-gold: #ffa733;
+  --ukwala-cream: #fff8e1;
 }
 
-/* --- General Reset --- */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-}
-
+/* ===== Global ===== */
 body {
-  background-color: var(--ukwala-gray);
-  color: var(--ukwala-dark);
-  line-height: 1.6;
+  margin: 0;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: #f9f9f9;
+  color: #333;
 }
 
-/* --- Header --- */
+/* ===== Header ===== */
 .ukwala-header {
-  background-color: var(--ukwala-green);
-  color: #fff;
   text-align: center;
-  padding: 25px 15px;
-  border-bottom: 5px solid var(--ukwala-red);
+  background: linear-gradient(135deg, var(--ukwala-navy), var(--ukwala-orange));
+  color: white;
+  padding: 1.5rem 1rem;
+  border-bottom: 4px solid var(--ukwala-gold);
 }
 
+/* Centered + resized logo */
 .ukwala-logo {
   display: block;
-  margin: 0 auto 10px;
-  width: 140px; /* ✅ Adjusted logo size */
+  margin: 0 auto 10px auto;
+  width: 120px;
   height: auto;
+  border-radius: 8px;
+  object-fit: contain;
+  text-align: center;
 }
 
 .ukwala-title {
   font-size: 1.8rem;
-  font-weight: 600;
-  margin-top: 10px;
+  font-weight: 700;
+  color: var(--ukwala-cream);
+  margin: 0;
+  letter-spacing: 0.5px;
+  text-align: center;
 }
 
-/* --- Container --- */
+/* ===== Container ===== */
 .container {
-  max-width: 700px;
-  background: #fff;
-  margin: 40px auto;
-  padding: 25px 30px;
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 1rem;
+  background: white;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-/* --- Intro Section --- */
-.intro p {
-  margin-bottom: 10px;
-  text-align: justify;
+h2 {
+  text-align: center;
+  color: var(--ukwala-orange);
 }
 
-/* --- Form --- */
-.application-form label {
-  display: block;
+/* ===== Form ===== */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  margin-top: 1rem;
+}
+
+label {
   font-weight: 600;
-  margin-top: 15px;
-  margin-bottom: 5px;
-  color: var(--ukwala-green);
+  color: var(--ukwala-navy);
 }
 
-.application-form input,
-.application-form select {
-  width: 100%;
-  padding: 10px;
-  border: 1.5px solid #ccc;
+input {
+  padding: 0.6rem;
   border-radius: 6px;
+  border: 1px solid #ccc;
   font-size: 1rem;
-  transition: all 0.2s ease;
 }
 
-.application-form input:focus,
-.application-form select:focus {
-  border-color: var(--ukwala-green);
+input:focus {
+  border-color: var(--ukwala-orange);
   outline: none;
-  box-shadow: 0 0 5px rgba(11, 122, 52, 0.3);
+  box-shadow: 0 0 5px rgba(255, 102, 0, 0.3);
 }
 
-h3 {
-  margin-top: 25px;
-  color: var(--ukwala-red);
-  text-decoration: underline;
-}
-
-/* --- Button --- */
 .submit-btn {
-  background-color: var(--ukwala-green);
-  color: #fff;
+  background: var(--ukwala-orange);
+  color: white;
+  font-weight: bold;
+  padding: 0.8rem;
   border: none;
-  padding: 12px 20px;
-  margin-top: 25px;
-  border-radius: 6px;
-  font-size: 1rem;
+  border-radius: 8px;
   cursor: pointer;
-  transition: background 0.3s ease;
+  transition: background 0.3s;
 }
 
 .submit-btn:hover {
-  background-color: var(--ukwala-red);
+  background: var(--ukwala-navy);
 }
 
-/* --- Success Page --- */
-.success-message {
-  text-align: center;
-}
-
-.success-message h2 {
-  color: var(--ukwala-green);
-  margin-bottom: 15px;
-}
-
-.success-message ul {
-  list-style: disc;
-  margin: 10px 0 20px 30px;
-  text-align: left;
-}
-
-.center-btn {
-  text-align: center;
-  margin-top: 25px;
-}
-
-/* --- Admin Table --- */
-#applicantsTable {
+/* ===== Table ===== */
+table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 20px;
+  margin-top: 1rem;
 }
 
-#applicantsTable th,
-#applicantsTable td {
+th, td {
   border: 1px solid #ddd;
-  padding: 10px;
+  padding: 8px;
   text-align: center;
 }
 
-#applicantsTable th {
-  background-color: var(--ukwala-green);
-  color: #fff;
+th {
+  background-color: var(--ukwala-navy);
+  color: white;
 }
 
-#applicantsTable tr:nth-child(even) {
-  background-color: #f9f9f9;
+tr:nth-child(even) {
+  background-color: #f2f2f2;
 }
 
-/* --- Footer --- */
+/* ===== Footer ===== */
 .ukwala-footer {
-  background-color: var(--ukwala-green);
-  color: #fff;
+  background: linear-gradient(135deg, var(--ukwala-navy), var(--ukwala-orange));
+  color: white;
+  padding: 1.5rem 1rem;
   text-align: center;
-  padding: 20px;
-  border-top: 5px solid var(--ukwala-red);
-  margin-top: 50px;
+  margin-top: 3rem;
 }
 
-.ukwala-footer-sub {
+.ukwala-footer p {
+  margin: 0.2rem 0;
   font-size: 0.9rem;
-  color: #ffe;
 }
 
-/* --- Responsive --- */
-@media (max-width: 600px) {
+/* ===== Responsive ===== */
+@media (max-width: 640px) {
+  .ukwala-logo {
+    width: 90px;
+  }
   .ukwala-title {
     font-size: 1.4rem;
-  }
-
-  .container {
-    margin: 20px;
-    padding: 20px;
-  }
-
-  .ukwala-logo {
-    width: 110px;
   }
 }
