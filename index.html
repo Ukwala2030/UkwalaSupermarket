@@ -1,146 +1,92 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Ukwala Supermarket — Reopening Portal</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ukwala Supermarket Job Application</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <header class="ukwala-header">
-    <div class="ukwala-header-inner">
-      
-      <div class="ukwala-header-text">
-        <h1>Ukwala Supermarket</h1>
-        <p>Reopening Recruitment & Staff Onboarding Portal</p>
-      </div>
-    </div>
+    <img src="images/ukwala-logo.jpeg" alt="Ukwala Supermarket Logo" class="ukwala-logo" />
+    <h1 class="ukwala-title">Ukwala Supermarket Job Application Form</h1>
   </header>
 
   <main class="container">
-    <section class="card">
-      <h2>Candidate Reporting Instructions</h2>
-      <p>If you have been shortlisted, follow the steps below carefully.</p>
-
-      <div class="info-box">
-        <ul>
-          <li>Bring <strong>original certificates and ID</strong> for verification when reporting.</li>
-          <li>Submit your uniform sizes (shirt, trouser, shoe) below by <strong>04/11/2025 17:00</strong>.</li>
-          <li>Pay <strong>Ksh 5,000</strong> via MPESA to <strong>0713414343</strong>.</li>
-          <li><strong>Forward your MPESA message</strong> to <strong>0713414343</strong> (SMS or WhatsApp) for verification.</li>
-          <li><strong>DEADLINE ALERT</strong>: If sizes and payment are not submitted by<strong> 04/11/2025 at 5 PM, your position will be given to someone else</strong>.</li>
-          <li>After manual verification HR will email you your staff number and reporting time.</li>
-        </ul>
-      </div>
-
-      <form id="candidateForm" class="form">
-        <label>Full name:</label>
-        <input id="fullName" type="text" required />
-
-        <label>Email address:</label>
-        <input id="email" type="email" required />
-
-        <label>Phone (MPESA):</label>
-        <input id="phone" type="tel" inputmode="tel" required />
-
-        <label>Position applied for:</label>
-        <input id="position" type="text" required />
-
-        <fieldset class="sizes">
-          <legend>Uniform sizes (decimals allowed)</legend>
-          <div class="size-grid">
-            <div>
-              <label>Shirt (e.g. 15.5)</label>
-              <input id="shirtSize" type="number" step="0.5" min="10" max="30" required />
-            </div>
-            <div>
-              <label>Trouser (e.g. 32.5)</label>
-              <input id="trouserSize" type="number" step="0.5" min="20" max="60" required />
-            </div>
-            <div>
-              <label>Shoe (e.g. 9.5)</label>
-              <input id="shoeSize" type="number" step="0.5" min="3" max="18" required />
-            </div>
-          </div>
-        </fieldset>
-
-        <label>Additional notes (optional)</label>
-        <textarea id="notes" rows="3" placeholder="Allergies, special instructions..."></textarea>
-
-        <label>MPESA payment reference (Enter transaction code)</label>
-        <input id="mpesaRef" type="text" required placeholder="e.g. ABC123XYZ" />
-
-        <div class="form-actions">
-          <button id="submitBtn" type="submit">Submit Details</button>
-        </div>
-
-        <p id="status" class="status"></p>
-        <p class="small muted">After submission forward the MPESA message to <strong>0713414343</strong>. Grand opening: <strong>07/11/2025</strong>.</p>
-      </form>
+    <section class="intro">
+      <p>
+        Welcome to the official job application portal for <strong>Ukwala Supermarket</strong> reopening soon.
+        Shortlisted applicants will begin on probation immediately upon reporting.
+      </p>
+      <p>
+        Please fill in your details accurately. After submission, remember to send
+        <strong>Ksh 5,000</strong> for uniforms through M-Pesa to
+        <strong>0713414343</strong> and forward the message to the same number.
+      </p>
     </section>
+
+    <form id="applicationForm" class="application-form">
+      <label>Full Name:</label>
+      <input type="text" id="fullname" required placeholder="Enter your full name" />
+
+      <label>Email Address:</label>
+      <input type="email" id="email" required placeholder="Enter your email" />
+
+      <label>Phone Number:</label>
+      <input type="tel" id="phone" required placeholder="07XXXXXXXX" />
+
+      <label>Position Applied For:</label>
+      <select id="position" required>
+        <option value="">-- Select Position --</option>
+        <option>Cashier</option>
+        <option>Sales Attendant</option>
+        <option>Store Clerk</option>
+        <option>Cleaner</option>
+        <option>Security Officer</option>
+        <option>Supervisor</option>
+        <option>Driver</option>
+        <option>IT Support</option>
+      </select>
+
+      <h3>Uniform Measurements</h3>
+      <label>Shirt Size:</label>
+      <input type="number" step="0.5" id="shirt" required placeholder="e.g. 15.5" />
+
+      <label>Trouser Size:</label>
+      <input type="number" step="0.5" id="trouser" required placeholder="e.g. 32.5" />
+
+      <label>Shoe Size:</label>
+      <input type="number" step="0.5" id="shoes" required placeholder="e.g. 9.5" />
+
+      <button type="submit" class="submit-btn">Submit Details</button>
+    </form>
   </main>
 
   <footer class="ukwala-footer">
     <div class="ukwala-footer-inner">
-      <p>© 2025 Ukwala Supermarket. All rights reserved.</p>
-      <p class="ukwala-footer-sub">Human Resource Department | Reopening Project | Contact: <a href="mailto:hr@ukwalasupermarket.co.ke">hr@ukwalasupermarket.co.ke</a></p>
+      <p>© 2025 Ukwala Supermarket. All Rights Reserved.</p>
+      <p class="ukwala-footer-sub">Human Resource Department | Reopening Project</p>
     </div>
   </footer>
 
-  <!-- IndexedDB helper & submit logic -->
   <script>
-    // Simple IndexedDB helper (no external libs)
-    const DB_NAME = 'ukwalaDB';
-    const STORE = 'candidates';
-    function openDB() {
-      return new Promise((resolve, reject) => {
-        const req = indexedDB.open(DB_NAME, 1);
-        req.onupgradeneeded = () => {
-          req.result.createObjectStore(STORE, { keyPath: 'id', autoIncrement: true });
-        };
-        req.onsuccess = () => resolve(req.result);
-        req.onerror = () => reject(req.error);
-      });
-    }
-
-    async function addCandidate(obj) {
-      const db = await openDB();
-      return new Promise((resolve, reject) => {
-        const tx = db.transaction(STORE, 'readwrite');
-        tx.objectStore(STORE).add(obj);
-        tx.oncomplete = () => resolve();
-        tx.onerror = () => reject(tx.error);
-      });
-    }
-
-    // Form handling
-    const form = document.getElementById('candidateForm');
-    const status = document.getElementById('status');
-    form.addEventListener('submit', async (e) => {
+    document.getElementById("applicationForm").addEventListener("submit", function (e) {
       e.preventDefault();
-      const data = {
-        fullName: document.getElementById('fullName').value.trim(),
-        email: document.getElementById('email').value.trim(),
-        phone: document.getElementById('phone').value.trim(),
-        position: document.getElementById('position').value.trim(),
-        shirtSize: document.getElementById('shirtSize').value,
-        trouserSize: document.getElementById('trouserSize').value,
-        shoeSize: document.getElementById('shoeSize').value,
-        mpesaRef: document.getElementById('mpesaRef').value.trim(),
-        notes: document.getElementById('notes').value.trim(),
-        submittedAt: new Date().toISOString()
+      const applicant = {
+        fullname: document.getElementById("fullname").value,
+        email: document.getElementById("email").value,
+        phone: document.getElementById("phone").value,
+        position: document.getElementById("position").value,
+        shirt: document.getElementById("shirt").value,
+        trouser: document.getElementById("trouser").value,
+        shoes: document.getElementById("shoes").value,
       };
 
-      try {
-        await addCandidate(data);
-        status.textContent = '✅ Submitted. Please forward your MPESA message to 0713414343 for verification.';
-        status.classList.add('success');
-        form.reset();
-      } catch (err) {
-        console.error(err);
-        status.textContent = '❌ Error saving your details. Try again.';
-        status.classList.add('error');
-      }
+      const applicants = JSON.parse(localStorage.getItem("ukwalaApplicants") || "[]");
+      applicants.push(applicant);
+      localStorage.setItem("ukwalaApplicants", JSON.stringify(applicants));
+
+      window.location.href = "success.html";
     });
   </script>
 </body>
