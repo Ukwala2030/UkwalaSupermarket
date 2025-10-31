@@ -9,24 +9,20 @@
 <body>
   <header class="ukwala-header">
     <img src="images/ukwala-logo.jpeg" alt="Ukwala Supermarket Logo" class="ukwala-logo" />
-    <h1 class="ukwala-title">Admin Dashboard – Ukwala Supermarket</h1>
+    <h1 class="ukwala-title">Ukwala Supermarket – Admin Dashboard</h1>
   </header>
 
-  <!-- Admin Login Section -->
   <main class="container" id="loginSection">
     <h2>Admin Login</h2>
-    <form id="loginForm" class="application-form">
+    <form id="loginForm">
       <label>Username:</label>
       <input type="text" id="username" required placeholder="Enter username" />
-
       <label>Password:</label>
       <input type="password" id="password" required placeholder="Enter password" />
-
       <button type="submit" class="submit-btn">Login</button>
     </form>
   </main>
 
-  <!-- Dashboard Section -->
   <main class="container" id="dashboardSection" style="display: none;">
     <h2>Applicant Submissions</h2>
     <table id="applicantsTable">
@@ -43,10 +39,7 @@
       </thead>
       <tbody></tbody>
     </table>
-
-    <div class="center-btn">
-      <button id="exportBtn" class="submit-btn">⬇ Export as CSV</button>
-    </div>
+    <button id="exportBtn" class="submit-btn">Export as CSV</button>
   </main>
 
   <footer class="ukwala-footer">
@@ -61,34 +54,29 @@
     const loginSection = document.getElementById("loginSection");
     const dashboardSection = document.getElementById("dashboardSection");
     const applicantsTable = document.querySelector("#applicantsTable tbody");
+    const username = "admin";
+    const password = "ukw@la2025";
 
-    const ADMIN_USER = "admin";
-    const ADMIN_PASS = "ukw@la2025";
-
-    // Login handler
     loginForm.addEventListener("submit", (e) => {
       e.preventDefault();
       const user = document.getElementById("username").value;
       const pass = document.getElementById("password").value;
-      if (user === ADMIN_USER && pass === ADMIN_PASS) {
+      if (user === username && pass === password) {
         loginSection.style.display = "none";
         dashboardSection.style.display = "block";
         loadApplicants();
       } else {
-        alert("❌ Invalid login credentials. Please try again.");
+        alert("Invalid login. Try again.");
       }
     });
 
-    // Load applicants from localStorage
     function loadApplicants() {
       applicantsTable.innerHTML = "";
       const applicants = JSON.parse(localStorage.getItem("ukwalaApplicants") || "[]");
-
       if (applicants.length === 0) {
-        applicantsTable.innerHTML = '<tr><td colspan="7" style="text-align:center;">No applicant data found.</td></tr>';
+        applicantsTable.innerHTML = '<tr><td colspan="7" style="text-align:center;">No data found.</td></tr>';
         return;
       }
-
       applicants.forEach(app => {
         const row = `<tr>
           <td>${app.fullname}</td>
@@ -103,20 +91,16 @@
       });
     }
 
-    // Export as CSV
     document.getElementById("exportBtn").addEventListener("click", () => {
       const applicants = JSON.parse(localStorage.getItem("ukwalaApplicants") || "[]");
-
       if (applicants.length === 0) {
-        alert("⚠ No applicant data to export.");
+        alert("No applicant data available.");
         return;
       }
-
       const csv = [
         ["Full Name", "Email", "Phone", "Position", "Shirt Size", "Trouser Size", "Shoe Size"],
         ...applicants.map(a => [a.fullname, a.email, a.phone, a.position, a.shirt, a.trouser, a.shoes])
       ].map(r => r.join(",")).join("\n");
-
       const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
