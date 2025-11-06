@@ -1,113 +1,197 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ukwala Supermarket Admin Dashboard</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Ukwala Admin — Candidate Dashboard</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <header class="ukwala-header">
-    <img src="images/ukwala-logo.jpeg" alt="Ukwala Supermarket Logo" class="ukwala-logo" />
-    <h1 class="ukwala-title">Ukwala Supermarket – Admin Dashboard</h1>
+    <div class="ukwala-header-inner">
+      <img src="images/ukwala-logo.jpeg" alt="Ukwala Logo" class="ukwala-logo" />
+      <div class="ukwala-header-text">
+        <h1>Ukwala Supermarket — Admin</h1>
+        <p>Candidate Submissions Dashboard</p>
+      </div>
+    </div>
   </header>
 
-  <main class="container" id="loginSection">
-    <h2>Admin Login</h2>
-    <form id="loginForm">
-      <label>Username:</label>
-      <input type="text" id="username" required placeholder="Enter username" />
-      <label>Password:</label>
-      <input type="password" id="password" required placeholder="Enter password" />
-      <button type="submit" class="submit-btn">Login</button>
-    </form>
-  </main>
+  <main class="container">
+    <section class="card">
+      <h2>Admin Login</h2>
+      <p class="muted">Use the credentials provided to access candidate submissions.</p>
 
-  <main class="container" id="dashboardSection" style="display: none;">
-    <h2>Applicant Submissions</h2>
-    <table id="applicantsTable">
-      <thead>
-        <tr>
-          <th>Full Name</th>
-          <th>Email</th>
-          <th>Phone</th>
-          <th>Position</th>
-          <th>Shirt Size</th>
-          <th>Trouser Size</th>
-          <th>Shoe Size</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-    <button id="exportBtn" class="submit-btn">Export as CSV</button>
+      <div id="loginBox" class="login-box">
+        <label>Username</label>
+        <input id="username" type="text" autocomplete="username" />
+
+        <label>Password</label>
+        <input id="password" type="password" autocomplete="current-password" />
+
+        <div class="form-actions">
+          <button id="loginBtn">Log in</button>
+        </div>
+        <p id="loginStatus" class="status"></p>
+      </div>
+
+      <div id="dashboard" class="hidden">
+        <div class="admin-actions">
+          <div>
+            <button id="refreshBtn">Refresh</button>
+            <button id="clearBtn" title="Clear all saved submissions (irreversible)">Clear All</button>
+          </div>
+          <div>
+            <button id="exportBtn">Export CSV</button>
+            <button id="logoutBtn" class="danger">Logout</button>
+          </div>
+        </div>
+
+        <table id="candidatesTable">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Position</th>
+              <th>Shirt</th>
+              <th>Trouser</th>
+              <th>Shoe</th>
+              <th>MPESA Ref</th>
+              <th>Submitted At</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
   </main>
 
   <footer class="ukwala-footer">
     <div class="ukwala-footer-inner">
-      <p>© 2025 Ukwala Supermarket. Admin Use Only.</p>
-      <p class="ukwala-footer-sub">Human Resource Department | Reopening Project</p>
+      <p>© 2025 Ukwala Supermarket. All rights reserved.</p>
     </div>
   </footer>
 
   <script>
-    const loginForm = document.getElementById("loginForm");
-    const loginSection = document.getElementById("loginSection");
-    const dashboardSection = document.getElementById("dashboardSection");
-    const applicantsTable = document.querySelector("#applicantsTable tbody");
-    const username = "admin";
-    const password = "ukw@la2025";
-
-    loginForm.addEventListener("submit", (e) => {
-      e.preventDefault();
-      const user = document.getElementById("username").value;
-      const pass = document.getElementById("password").value;
-      if (user === username && pass === password) {
-        loginSection.style.display = "none";
-        dashboardSection.style.display = "block";
-        loadApplicants();
-      } else {
-        alert("Invalid login. Try again.");
-      }
-    });
-
-    function loadApplicants() {
-      applicantsTable.innerHTML = "";
-      const applicants = JSON.parse(localStorage.getItem("ukwalaApplicants") || "[]");
-      if (applicants.length === 0) {
-        applicantsTable.innerHTML = '<tr><td colspan="7" style="text-align:center;">No data found.</td></tr>';
-        return;
-      }
-      applicants.forEach(app => {
-        const row = `<tr>
-          <td>${app.fullname}</td>
-          <td>${app.email}</td>
-          <td>${app.phone}</td>
-          <td>${app.position}</td>
-          <td>${app.shirt}</td>
-          <td>${app.trouser}</td>
-          <td>${app.shoes}</td>
-        </tr>`;
-        applicantsTable.insertAdjacentHTML("beforeend", row);
+    // IndexedDB helper (same DB name/store)
+    const DB_NAME = 'ukwalaDB';
+    const STORE = 'candidates';
+    function openDB() {
+      return new Promise((resolve, reject) => {
+        const req = indexedDB.open(DB_NAME, 1);
+        req.onupgradeneeded = () => req.result.createObjectStore(STORE, { keyPath: 'id', autoIncrement: true });
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject(req.error);
+      });
+    }
+    async function getAllCandidates() {
+      const db = await openDB();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(STORE, 'readonly');
+        const req = tx.objectStore(STORE).getAll();
+        req.onsuccess = () => resolve(req.result || []);
+        req.onerror = () => reject(req.error);
+      });
+    }
+    async function clearAllCandidates() {
+      const db = await openDB();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(STORE, 'readwrite');
+        tx.objectStore(STORE).clear();
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
       });
     }
 
-    document.getElementById("exportBtn").addEventListener("click", () => {
-      const applicants = JSON.parse(localStorage.getItem("ukwalaApplicants") || "[]");
-      if (applicants.length === 0) {
-        alert("No applicant data available.");
+    // Login credentials
+    const ADMIN_USER = 'admin';
+    const ADMIN_PASS = 'ukw@la2025';
+
+    const loginBox = document.getElementById('loginBox');
+    const dashboard = document.getElementById('dashboard');
+    const loginBtn = document.getElementById('loginBtn');
+    const loginStatus = document.getElementById('loginStatus');
+
+    loginBtn.addEventListener('click', async () => {
+      const user = document.getElementById('username').value.trim();
+      const pass = document.getElementById('password').value;
+      loginStatus.textContent = '';
+      if (user === ADMIN_USER && pass === ADMIN_PASS) {
+        loginBox.classList.add('hidden');
+        dashboard.classList.remove('hidden');
+        await loadTable();
+      } else {
+        loginStatus.textContent = 'Incorrect credentials.';
+        loginStatus.classList.add('error');
+      }
+    });
+
+    async function loadTable() {
+      const rows = document.querySelector('#candidatesTable tbody');
+      rows.innerHTML = '';
+      const data = await getAllCandidates();
+      if (!data.length) {
+        rows.innerHTML = '<tr><td colspan="10" class="muted center">No submissions yet.</td></tr>';
         return;
       }
-      const csv = [
-        ["Full Name", "Email", "Phone", "Position", "Shirt Size", "Trouser Size", "Shoe Size"],
-        ...applicants.map(a => [a.fullname, a.email, a.phone, a.position, a.shirt, a.trouser, a.shoes])
-      ].map(r => r.join(",")).join("\n");
-      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      rows.innerHTML = data.map((c, idx) => `
+        <tr>
+          <td>${idx + 1}</td>
+          <td>${escapeHtml(c.fullName)}</td>
+          <td>${escapeHtml(c.email)}</td>
+          <td>${escapeHtml(c.phone)}</td>
+          <td>${escapeHtml(c.position)}</td>
+          <td>${escapeHtml(c.shirtSize)}</td>
+          <td>${escapeHtml(c.trouserSize)}</td>
+          <td>${escapeHtml(c.shoeSize)}</td>
+          <td>${escapeHtml(c.mpesaRef)}</td>
+          <td>${new Date(c.submittedAt).toLocaleString()}</td>
+        </tr>
+      `).join('');
+    }
+
+    document.getElementById('refreshBtn').addEventListener('click', loadTable);
+
+    document.getElementById('exportBtn').addEventListener('click', async () => {
+      const data = await getAllCandidates();
+      if (!data.length) { alert('No submissions to export.'); return; }
+      const headers = ['Name','Email','Phone','Position','Shirt','Trouser','Shoe','MPESARef','SubmittedAt'];
+      const rows = data.map(d => [
+        d.fullName, d.email, d.phone, d.position,
+        d.shirtSize, d.trouserSize, d.shoeSize, d.mpesaRef, d.submittedAt
+      ]);
+      const csv = [headers, ...rows].map(r => r.map(cell => `"${String(cell || '').replace(/"/g,'""')}"`).join(',')).join('\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
       const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = "ukwala_applicants.csv";
-      link.click();
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `ukwala_submissions_${new Date().toISOString().split('T')[0]}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
     });
+
+    document.getElementById('clearBtn').addEventListener('click', async () => {
+      if (!confirm('Clear ALL submissions? This action cannot be undone.')) return;
+      await clearAllCandidates();
+      loadTable();
+      alert('All submissions cleared.');
+    });
+
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      dashboard.classList.add('hidden');
+      loginBox.classList.remove('hidden');
+      document.getElementById('username').value = '';
+      document.getElementById('password').value = '';
+    });
+
+    function escapeHtml(s) {
+      if (!s) return '';
+      return s.replace(/[&<>"']/g, (m) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+    }
   </script>
 </body>
 </html>
