@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,7 +10,7 @@
 <body>
   <header class="ukwala-header">
     <div class="ukwala-header-inner">
-      <img src="images/ukwala-logo.jpeg" alt="Ukwala Supermarket Logo" class="ukwala-logo" />
+      
       <div class="ukwala-header-text">
         <h1>Ukwala Supermarket</h1>
         <p>Reopening Recruitment & Staff Onboarding Portal</p>
@@ -43,8 +44,18 @@
         <label>Phone (MPESA):</label>
         <input id="phone" type="tel" inputmode="tel" required />
 
-        <label>Position applied for:</label>
-        <input id="position" type="text" required />
+        <label>Position Applied For:</label>
+      <select id="position" required>
+        <option value="">-- Select Position --</option>
+        <option>Cashier</option>
+        <option>Sales Attendant</option>
+        <option>Store Clerk</option>
+        <option>Cleaner</option>
+        <option>Security Officer</option>
+        <option>Supervisor</option>
+        <option>Driver</option>
+        <option>IT Support</option>
+      </select>
 
         <fieldset class="sizes">
           <legend>Uniform sizes (decimals allowed)</legend>
@@ -88,61 +99,83 @@
 
   <!-- IndexedDB helper & submit logic -->
   <script>
-    // Simple IndexedDB helper (no external libs)
-    const DB_NAME = 'ukwalaDB';
-    const STORE = 'candidates';
-    function openDB() {
-      return new Promise((resolve, reject) => {
-        const req = indexedDB.open(DB_NAME, 1);
-        req.onupgradeneeded = () => {
-          req.result.createObjectStore(STORE, { keyPath: 'id', autoIncrement: true });
-        };
-        req.onsuccess = () => resolve(req.result);
-        req.onerror = () => reject(req.error);
-      });
-    }
+  const DB_NAME = 'ukwalaDB';
+  const STORE = 'candidates';
 
-    async function addCandidate(obj) {
-      const db = await openDB();
-      return new Promise((resolve, reject) => {
-        const tx = db.transaction(STORE, 'readwrite');
-        tx.objectStore(STORE).add(obj);
-        tx.oncomplete = () => resolve();
-        tx.onerror = () => reject(tx.error);
-      });
-    }
-
-    // Form handling
-    const form = document.getElementById('candidateForm');
-    const status = document.getElementById('status');
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const data = {
-        fullName: document.getElementById('fullName').value.trim(),
-        email: document.getElementById('email').value.trim(),
-        phone: document.getElementById('phone').value.trim(),
-        position: document.getElementById('position').value.trim(),
-        shirtSize: document.getElementById('shirtSize').value,
-        trouserSize: document.getElementById('trouserSize').value,
-        shoeSize: document.getElementById('shoeSize').value,
-        mpesaRef: document.getElementById('mpesaRef').value.trim(),
-        notes: document.getElementById('notes').value.trim(),
-        submittedAt: new Date().toISOString()
+  // Open IndexedDB
+  function openDB() {
+    return new Promise((resolve, reject) => {
+      const req = indexedDB.open(DB_NAME, 1);
+      req.onupgradeneeded = () => {
+        req.result.createObjectStore(STORE, { keyPath: 'id', autoIncrement: true });
       };
-
-      try {
-        await addCandidate(data);
-        status.textContent = '✅ Submitted.';
-        status.classList.add('success');
-        form.reset();
-      } catch (err) {
-        console.error(err);
-        status.textContent = '❌ Error saving your details. Try again.';
-        status.classList.add('error');
-      }
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
     });
-  </script>
+  }
+
+  // Add record to DB
+  async function addCandidate(obj) {
+    const db = await openDB();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(STORE, 'readwrite');
+      tx.objectStore(STORE).add(obj);
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+    });
+  }
+
+  // Handle form submission
+  const form = document.getElementById('candidateForm');
+
+  // Create a temporary overlay for smooth UX
+  const overlay = document.createElement('div');
+  overlay.id = 'loadingOverlay';
+  overlay.innerHTML = `
+    <div class="loading-content">
+      <div class="spinner"></div>
+      <p>Processing your submission...</p>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+
+  overlay.style.display = 'none'; // hide by default
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const data = {
+      fullName: document.getElementById('fullName').value.trim(),
+      email: document.getElementById('email').value.trim(),
+      phone: document.getElementById('phone').value.trim(),
+      position: document.getElementById('position').value.trim(),
+      shirtSize: document.getElementById('shirtSize').value,
+      trouserSize: document.getElementById('trouserSize').value,
+      shoeSize: document.getElementById('shoeSize').value,
+      mpesaRef: document.getElementById('mpesaRef').value.trim(),
+      notes: document.getElementById('notes').value.trim(),
+      submittedAt: new Date().toISOString()
+    };
+
+    try {
+      // Show the overlay
+      overlay.style.display = 'flex';
+      await addCandidate(data);
+
+      // Delay to show "Processing..." animation before redirect
+      setTimeout(() => {
+        window.location.href = "submission.html";
+      }, 1500);
+    } catch (err) {
+      console.error(err);
+      overlay.style.display = 'none';
+      alert("❌ Error saving your details. Please try again.");
+    }
+  });
+</script>
+
 </body>
 </html>
+
 
 
