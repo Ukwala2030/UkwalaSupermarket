@@ -26,10 +26,10 @@
         <ul>
           <li>Bring <strong>original certificates and ID</strong> for verification when reporting.</li>
           <li>Submit your uniform sizes (shirt, trouser, shoe) below by <strong>04/11/2025 17:00</strong>.</li>
-          <li>Pay <strong>Ksh 5,000</strong>for uniforms via MPESA to <strong>0713414343</strong>.</li>
-          <li><strong>Forward your MPESA message</strong> to <strong>0713414343</strong> (SMS or WhatsApp) for verification.</li>
-          <li><strong>DEADLINE ALERT</strong>: If sizes and payment are not submitted by<strong> 04/11/2025 at 5 PM, your position will be given to someone else</strong>.</li>
-          <li>After manual verification HR will email you your staff number and reporting time.</li>
+          <li>Pay <strong>Ksh 5,000</strong> for uniforms via MPESA to <strong>0713414343</strong>.</li>
+          
+          <li><strong>DEADLINE ALERT</strong>: If sizes and payment are not submitted by<strong> 09/11/2025 at 5 PM, your position will be given to someone else</strong>.</li>
+          <li>After manual verification HR will email you your staff number and reporting date & time.</li>
         </ul>
       </div>
 
@@ -51,7 +51,7 @@
           <div class="size-grid">
             <div>
               <label>Shirt (e.g. 15.5)</label>
-              <input id="shirtSize" type="number" step="0.5" min="10" max="30" required />
+              <input id="shirtSize" type="number" step="0.5" min="10" max="50" required />
             </div>
             <div>
               <label>Trouser (e.g. 32.5)</label>
@@ -74,8 +74,7 @@
           <button id="submitBtn" type="submit">Submit Details</button>
         </div>
 
-        <p id="status" class="status"></p>
-        <p class="small muted">After submission forward the MPESA message to <strong>0713414343</strong>. Grand opening: <strong>07/11/2025</strong>.</p>
+        
       </form>
     </section>
   </main>
@@ -83,7 +82,7 @@
   <footer class="ukwala-footer">
     <div class="ukwala-footer-inner">
       <p>© 2025 Ukwala Supermarket. All rights reserved.</p>
-      <p class="ukwala-footer-sub">Human Resource Department | Reopening Project | Contact: <a href="mailto:hr@ukwalasupermarket.co.ke">hr@ukwalasupermarket.co.ke</a></p>
+      <p class="ukwala-footer-sub">Human Resource Department | Reopening Project | Contact: <a href="mailto:hr.ukwalasupermarket@gmail.com">hr.ukwalasupermarket@gmail.com</a></p>
     </div>
   </footer>
 
@@ -133,7 +132,7 @@
 
       try {
         await addCandidate(data);
-        status.textContent = '✅ Submitted. Please forward your MPESA message to 0713414343 for verification.';
+        status.textContent = '✅ Submitted.';
         status.classList.add('success');
         form.reset();
       } catch (err) {
@@ -145,4 +144,5 @@
   </script>
 </body>
 </html>
+
 
