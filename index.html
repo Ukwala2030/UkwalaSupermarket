@@ -105,38 +105,29 @@
     </div>
   </footer>
 
-  <!-- IndexedDB helper & submit logic -->
-  <script>
-  const DB_NAME = 'ukwalaDB';
-  const STORE = 'candidates';
+ <!-- Add Firebase SDKs in your <head> or just before your JS -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 
-  // Open IndexedDB
-  function openDB() {
-    return new Promise((resolve, reject) => {
-      const req = indexedDB.open(DB_NAME, 1);
-      req.onupgradeneeded = () => {
-        req.result.createObjectStore(STORE, { keyPath: 'id', autoIncrement: true });
-      };
-      req.onsuccess = () => resolve(req.result);
-      req.onerror = () => reject(req.error);
-    });
-  }
+<script>
+  // Use your config
+  const firebaseConfig = {
+    apiKey: "AIzaSyAMv_K3Boehxfz0jMhu-s4JrPUTOq7S50w",
+    authDomain: "ukwalasupermarket-c70c5.firebaseapp.com",
+    databaseURL: "https://ukwalasupermarket-c70c5-default-rtdb.firebaseio.com",
+    projectId: "ukwalasupermarket-c70c5",
+    storageBucket: "ukwalasupermarket-c70c5.firebasestorage.app",
+    messagingSenderId: "914717482170",
+    appId: "1:914717482170:web:424a25e2c83d230a4eb683",
+    measurementId: "G-0LNYX6DM4F"
+  };
 
-  // Add record to DB
-  async function addCandidate(obj) {
-    const db = await openDB();
-    return new Promise((resolve, reject) => {
-      const tx = db.transaction(STORE, 'readwrite');
-      tx.objectStore(STORE).add(obj);
-      tx.oncomplete = () => resolve();
-      tx.onerror = () => reject(tx.error);
-    });
-  }
+  // Initialize Firebase
+  const app = firebase.initializeApp(firebaseConfig);
+  const database = firebase.database();
 
-  // Handle form submission
   const form = document.getElementById('candidateForm');
 
-  // Create a temporary overlay for smooth UX
   const overlay = document.createElement('div');
   overlay.id = 'loadingOverlay';
   overlay.innerHTML = `
@@ -146,8 +137,7 @@
     </div>
   `;
   document.body.appendChild(overlay);
-
-  overlay.style.display = 'none'; // hide by default
+  overlay.style.display = 'none';
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -166,11 +156,8 @@
     };
 
     try {
-      // Show the overlay
       overlay.style.display = 'flex';
-      await addCandidate(data);
-
-      // Delay to show "Processing..." animation before redirect
+      await database.ref('candidates').push(data);
       setTimeout(() => {
         window.location.href = "submission.html";
       }, 1500);
