@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,7 +9,6 @@
 <body>
   <header class="ukwala-header">
     <div class="ukwala-header-inner">
-      
       <div class="ukwala-header-text">
         <h1>Ukwala Supermarket</h1>
         <p>Reopening Recruitment & Staff Onboarding Portal</p>
@@ -32,7 +30,6 @@
           <li>Pay <strong>Ksh 5,000</strong> for uniforms via <strong>Mobile Money to our approved uniform provider at 0738 581 449 (James Mwirigi)</strong>.</li>
           <li><strong>Important:</strong> Your <strong>uniform must be ready before 19/11/2025</strong> due to the limited time before our <strong>grand reopening</strong>.</li>
           <li><strong>DEADLINE ALERT</strong>: If sizes and payment are not submitted by<strong> 17/11/2025 at 5 PM, your position will be given to someone else</strong>.</li>
-          
         </ul>
       </div>
 
@@ -47,23 +44,23 @@
         <input id="phone" type="tel" inputmode="tel" required />
 
         <label>Position Applied For:</label>
-      <select id="position" required>
-        <option value="">-- Select Position --</option>
-        <option>Cashier</option>
-        <option>Store Clerk / Shelf Stocker</option>
-        <option>Sales Attendant</option>
-        <option>Butcher / Meat Attendant</option>
-        <option>Cleaner</option>
-        <option>Baker / Pastry Assistant</option>
-        <option>Customer Service Assistant</option>
-        <option>Human Resource Assistant</option>
-        <option> Procurement / Inventory Officer</option>
-        <option>Security Officer</option>
-        <option>Supervisor</option>
-        <option>Driver</option>
-        <option>IT Support</option>
-        <option>Branch Manager</option>
-      </select>
+        <select id="position" required>
+          <option value="">-- Select Position --</option>
+          <option>Cashier</option>
+          <option>Store Clerk / Shelf Stocker</option>
+          <option>Sales Attendant</option>
+          <option>Butcher / Meat Attendant</option>
+          <option>Cleaner</option>
+          <option>Baker / Pastry Assistant</option>
+          <option>Customer Service Assistant</option>
+          <option>Human Resource Assistant</option>
+          <option>Procurement / Inventory Officer</option>
+          <option>Security Officer</option>
+          <option>Supervisor</option>
+          <option>Driver</option>
+          <option>IT Support</option>
+          <option>Branch Manager</option>
+        </select>
 
         <fieldset class="sizes">
           <legend>Uniform sizes (decimals allowed)</legend>
@@ -92,8 +89,6 @@
         <div class="form-actions">
           <button id="submitBtn" type="submit">Submit Details</button>
         </div>
-
-        
       </form>
     </section>
   </main>
@@ -105,77 +100,70 @@
     </div>
   </footer>
 
- <!-- Add Firebase SDKs in your <head> or just before your JS -->
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 
-<script>
-  // Use your config
-  const firebaseConfig = {
-    apiKey: "AIzaSyAMv_K3Boehxfz0jMhu-s4JrPUTOq7S50w",
-    authDomain: "ukwalasupermarket-c70c5.firebaseapp.com",
-    databaseURL: "https://ukwalasupermarket-c70c5-default-rtdb.firebaseio.com",
-    projectId: "ukwalasupermarket-c70c5",
-    storageBucket: "ukwalasupermarket-c70c5.firebasestorage.app",
-    messagingSenderId: "914717482170",
-    appId: "1:914717482170:web:424a25e2c83d230a4eb683",
-    measurementId: "G-0LNYX6DM4F"
-  };
-
-  // Initialize Firebase
-  const app = firebase.initializeApp(firebaseConfig);
-  const database = firebase.database();
-
-  const form = document.getElementById('candidateForm');
-
-  const overlay = document.createElement('div');
-  overlay.id = 'loadingOverlay';
-  overlay.innerHTML = `
-    <div class="loading-content">
-      <div class="spinner"></div>
-      <p>Processing your submission...</p>
-    </div>
-  `;
-  document.body.appendChild(overlay);
-  overlay.style.display = 'none';
-
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-
-    const data = {
-      fullName: document.getElementById('fullName').value.trim(),
-      email: document.getElementById('email').value.trim(),
-      phone: document.getElementById('phone').value.trim(),
-      position: document.getElementById('position').value.trim(),
-      shirtSize: document.getElementById('shirtSize').value,
-      trouserSize: document.getElementById('trouserSize').value,
-      shoeSize: document.getElementById('shoeSize').value,
-      mpesaRef: document.getElementById('mpesaRef').value.trim(),
-      notes: document.getElementById('notes').value.trim(),
-      submittedAt: new Date().toISOString()
+  <script>
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyAMv_K3Boehxfz0jMhu-s4JrPUTOq7S50w",
+      authDomain: "ukwalasupermarket-c70c5.firebaseapp.com",
+      databaseURL: "https://ukwalasupermarket-c70c5-default-rtdb.firebaseio.com",
+      projectId: "ukwalasupermarket-c70c5",
+      storageBucket: "ukwalasupermarket-c70c5.firebasestorage.app",
+      messagingSenderId: "914717482170",
+      appId: "1:914717482170:web:424a25e2c83d230a4eb683",
+      measurementId: "G-0LNYX6DM4F"
     };
 
-    try {
-      overlay.style.display = 'flex';
-      await database.ref('candidates').push(data);
-      setTimeout(() => {
-        window.location.href = "submission.html";
-      }, 1500);
-    } catch (err) {
-      console.error(err);
-      overlay.style.display = 'none';
-      alert("❌ Error saving your details. Please try again.");
-    }
-  });
-</script>
+    // Initialize Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
 
+    const form = document.getElementById('candidateForm');
+
+    // Overlay for submission
+    const overlay = document.createElement('div');
+    overlay.id = 'loadingOverlay';
+    overlay.style.display = 'none';
+    overlay.innerHTML = `
+      <div class="loading-content">
+        <div class="spinner"></div>
+        <p>Processing your submission...</p>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+
+    // Submit form to Firebase
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const data = {
+        fullName: document.getElementById('fullName').value.trim(),
+        email: document.getElementById('email').value.trim(),
+        phone: document.getElementById('phone').value.trim(),
+        position: document.getElementById('position').value.trim(),
+        shirtSize: document.getElementById('shirtSize').value,
+        trouserSize: document.getElementById('trouserSize').value,
+        shoeSize: document.getElementById('shoeSize').value,
+        mpesaRef: document.getElementById('mpesaRef').value.trim(),
+        notes: document.getElementById('notes').value.trim(),
+        submittedAt: new Date().toISOString()
+      };
+
+      try {
+        overlay.style.display = 'flex';
+        await database.ref('candidates').push(data);
+        setTimeout(() => {
+          window.location.href = "submission.html";
+        }, 1500);
+      } catch (err) {
+        console.error("Firebase write failed:", err);
+        overlay.style.display = 'none';
+        alert("❌ Error saving your details. Please try again.");
+      }
+    });
+  </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
