@@ -74,98 +74,142 @@
     </div>
   </footer>
 
- <!-- Add Firebase SDKs in your <head> or just before your JS -->
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 
-<script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyAMv_K3Boehxfz0jMhu-s4JrPUTOq7S50w",
-    authDomain: "ukwalasupermarket-c70c5.firebaseapp.com",
-    databaseURL: "https://ukwalasupermarket-c70c5-default-rtdb.firebaseio.com",
-    projectId: "ukwalasupermarket-c70c5",
-    storageBucket: "ukwalasupermarket-c70c5.firebasestorage.app",
-    messagingSenderId: "914717482170",
-    appId: "1:914717482170:web:424a25e2c83d230a4eb683",
-    measurementId: "G-0LNYX6DM4F"
-  };
+  <script>
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyAMv_K3Boehxfz0jMhu-s4JrPUTOq7S50w",
+      authDomain: "ukwalasupermarket-c70c5.firebaseapp.com",
+      databaseURL: "https://ukwalasupermarket-c70c5-default-rtdb.firebaseio.com",
+      projectId: "ukwalasupermarket-c70c5",
+      storageBucket: "ukwalasupermarket-c70c5.firebasestorage.app",
+      messagingSenderId: "914717482170",
+      appId: "1:914717482170:web:424a25e2c83d230a4eb683",
+      measurementId: "G-0LNYX6DM4F"
+    };
 
-  const app = firebase.initializeApp(firebaseConfig);
-  const database = firebase.database();
+    // Initialize Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
 
-  const ADMIN_USER = 'admin';
-  const ADMIN_PASS = 'ukw@la2025';
+    const ADMIN_USER = 'admin';
+    const ADMIN_PASS = 'ukw@la2025';
 
-  const loginBox = document.getElementById('loginBox');
-  const dashboard = document.getElementById('dashboard');
-  const loginBtn = document.getElementById('loginBtn');
-  const loginStatus = document.getElementById('loginStatus');
-  const rows = document.querySelector('#candidatesTable tbody');
+    const loginBox = document.getElementById('loginBox');
+    const dashboard = document.getElementById('dashboard');
+    const loginBtn = document.getElementById('loginBtn');
+    const loginStatus = document.getElementById('loginStatus');
 
-  loginBtn.addEventListener('click', () => {
-    const user = document.getElementById('username').value.trim();
-    const pass = document.getElementById('password').value;
-    loginStatus.textContent = '';
-    if (user === ADMIN_USER && pass === ADMIN_PASS) {
-      loginBox.classList.add('hidden');
-      dashboard.classList.remove('hidden');
-      loadTable();
-    } else {
-      loginStatus.textContent = 'Incorrect credentials.';
-      loginStatus.classList.add('error');
+    // Login
+    loginBtn.addEventListener('click', () => {
+      const user = document.getElementById('username').value.trim();
+      const pass = document.getElementById('password').value;
+
+      loginStatus.textContent = '';
+      if(user === ADMIN_USER && pass === ADMIN_PASS){
+        loginBox.classList.add('hidden');
+        dashboard.classList.remove('hidden');
+        loadTable();
+      } else {
+        loginStatus.textContent = 'Incorrect credentials.';
+        loginStatus.classList.add('error');
+      }
+    });
+
+    // Load candidates from Firebase
+    async function loadTable(){
+      const tbody = document.querySelector('#candidatesTable tbody');
+      tbody.innerHTML = '<tr><td colspan="10" class="muted center">Loading...</td></tr>';
+
+      try {
+        const snapshot = await database.ref('candidates').once('value');
+        const data = snapshot.val();
+        if(!data){
+          tbody.innerHTML = '<tr><td colspan="10" class="muted center">No submissions yet.</td></tr>';
+          return;
+        }
+        const rows = Object.entries(data).map(([id, c], idx) => `
+          <tr>
+            <td>${idx+1}</td>
+            <td>${escapeHtml(c.fullName)}</td>
+            <td>${escapeHtml(c.email)}</td>
+            <td>${escapeHtml(c.phone)}</td>
+            <td>${escapeHtml(c.position)}</td>
+            <td>${escapeHtml(c.shirtSize)}</td>
+            <td>${escapeHtml(c.trouserSize)}</td>
+            <td>${escapeHtml(c.shoeSize)}</td>
+            <td>${escapeHtml(c.mpesaRef)}</td>
+            <td>${new Date(c.submittedAt).toLocaleString()}</td>
+          </tr>
+        `).join('');
+        tbody.innerHTML = rows;
+      } catch(err){
+        console.error("Failed to load candidates:", err);
+        tbody.innerHTML = '<tr><td colspan="10" class="muted center">Error loading data.</td></tr>';
+      }
     }
-  });
 
-  async function loadTable() {
-    rows.innerHTML = '';
-    const snapshot = await database.ref('candidates').once('value');
-    const data = snapshot.val() || {};
-    const keys = Object.keys(data);
-    if (!keys.length) {
-      rows.innerHTML = '<tr><td colspan="10" class="muted center">No submissions yet.</td></tr>';
-      return;
+    // Refresh
+    document.getElementById('refreshBtn').addEventListener('click', loadTable);
+
+    // Clear all submissions
+    document.getElementById('clearBtn').addEventListener('click', async () => {
+      if(!confirm('Clear ALL submissions? This action cannot be undone.')) return;
+      try{
+        await database.ref('candidates').remove();
+        loadTable();
+        alert('All submissions cleared.');
+      } catch(err){
+        console.error("Failed to clear submissions:", err);
+        alert("Error clearing submissions.");
+      }
+    });
+
+    // Export CSV
+    document.getElementById('exportBtn').addEventListener('click', async () => {
+      try{
+        const snapshot = await database.ref('candidates').once('value');
+        const data = snapshot.val();
+        if(!data){ alert("No submissions to export."); return; }
+
+        const headers = ['Name','Email','Phone','Position','Shirt','Trouser','Shoe','MPESARef','SubmittedAt'];
+        const rows = Object.values(data).map(d => [
+          d.fullName,d.email,d.phone,d.position,
+          d.shirtSize,d.trouserSize,d.shoeSize,d.mpesaRef,d.submittedAt
+        ]);
+
+        const csv = [headers, ...rows].map(r => r.map(cell => `"${String(cell||'').replace(/"/g,'""')}"`).join(',')).join('\n');
+        const blob = new Blob([csv], {type:'text/csv'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `ukwala_submissions_${new Date().toISOString().split('T')[0]}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      } catch(err){
+        console.error("CSV export failed:", err);
+        alert("Error exporting CSV.");
+      }
+    });
+
+    // Logout
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      dashboard.classList.add('hidden');
+      loginBox.classList.remove('hidden');
+      document.getElementById('username').value = '';
+      document.getElementById('password').value = '';
+    });
+
+    // Escape HTML
+    function escapeHtml(s){
+      if(!s) return '';
+      return s.replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
     }
-    rows.innerHTML = keys.map((key, idx) => {
-      const c = data[key];
-      return `
-        <tr>
-          <td>${idx+1}</td>
-          <td>${escapeHtml(c.fullName)}</td>
-          <td>${escapeHtml(c.email)}</td>
-          <td>${escapeHtml(c.phone)}</td>
-          <td>${escapeHtml(c.position)}</td>
-          <td>${escapeHtml(c.shirtSize)}</td>
-          <td>${escapeHtml(c.trouserSize)}</td>
-          <td>${escapeHtml(c.shoeSize)}</td>
-          <td>${escapeHtml(c.mpesaRef)}</td>
-          <td>${new Date(c.submittedAt).toLocaleString()}</td>
-        </tr>
-      `;
-    }).join('');
-  }
-
-  document.getElementById('refreshBtn').addEventListener('click', loadTable);
-
-  document.getElementById('clearBtn').addEventListener('click', async () => {
-    if (!confirm('Clear ALL submissions? This action cannot be undone.')) return;
-    await database.ref('candidates').remove();
-    loadTable();
-    alert('All submissions cleared.');
-  });
-
-  function escapeHtml(s) {
-    if (!s) return '';
-    return s.replace(/[&<>"']/g, (m) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-  }
-
-  document.getElementById('logoutBtn').addEventListener('click', () => {
-    dashboard.classList.add('hidden');
-    loginBox.classList.remove('hidden');
-    document.getElementById('username').value = '';
-    document.getElementById('password').value = '';
-  });
-</script>
-
+  </script>
 </body>
 </html>
-
